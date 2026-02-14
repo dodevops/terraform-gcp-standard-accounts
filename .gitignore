@@ -1,0 +1,20 @@
+# IDE configurations
+.idea
+
+# Terraform-specific
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Common OS files
+.DS_Store
+Thumbs.db
