@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.0"
+  required_version = "~> 1.0" # Specify compatible Terraform CLI versions
 
   required_providers {
     google = {
@@ -14,13 +14,9 @@ data "google_project" "this" {
 }
 
 locals {
-  # A map of accounts whose names are derived from the project ID
-  by_project_id = {
-    app_engine_default = "${var.project_id}@appspot.gserviceaccount.com"
-  }
-
   # A map of accounts whose names are derived from the project number
-  by_project_number = {
+  emails = {
+    app_engine_default       = "${var.project_id}@appspot.gserviceaccount.com"
     gce_default              = "${data.google_project.this.number}-compute@developer.gserviceaccount.com"
     cloud_build              = "${data.google_project.this.number}@cloudbuild.gserviceaccount.com"
     google_apis_agent        = "${data.google_project.this.number}@cloudservices.gserviceaccount.com"
@@ -31,15 +27,16 @@ locals {
     bigquery_agent           = "service-${data.google_project.this.number}@gcp-sa-bigquery.iam.gserviceaccount.com"
   }
 
-  # The final map of all service account emails, keyed by a short name
-  all_emails = merge(
-    local.by_project_number,
-    local.by_project_id
-  )
-
-  # The final map of all service accounts in the format required for IAM bindings
-  all_iam_members = {
-    for name, email in local.all_emails :
-    name => "serviceAccount:${email}"
+  # A map of all service accounts in the format required for IAM bindings
+  iam_members = {
+    app_engine_default       = "serviceAccount:${local.emails.app_engine_default}"
+    gce_default              = "serviceAccount:${local.emails.gce_default}"
+    cloud_build              = "serviceAccount:${local.emails.cloud_build}"
+    google_apis_agent        = "serviceAccount:${local.emails.google_apis_agent}"
+    pubsub_agent             = "serviceAccount:${local.emails.pubsub_agent}"
+    cloud_sql_agent          = "serviceAccount:${local.emails.cloud_sql_agent}"
+    container_registry_agent = "serviceAccount:${local.emails.container_registry_agent}"
+    kms_agent                = "serviceAccount:${local.emails.kms_agent}"
+    bigquery_agent           = "serviceAccount:${local.emails.bigquery_agent}"
   }
 }
