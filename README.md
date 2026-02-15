@@ -16,7 +16,7 @@ data "google_project" "this" {
 
 # Instantiate the module
 module "standard_accounts" {
-  source     = "./gcp-standard-accounts"
+  source     = "dodevops/standard-accounts/google"
   project_id = data.google_project.this.project_id
 }
 
